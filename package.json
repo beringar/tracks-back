@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "jest",
     "test-coverage": "jest --coverage",
     "prepare": "husky install"
   },
