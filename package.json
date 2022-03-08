@@ -4,13 +4,32 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand --detectOpenHandles --passWithNoTests",
+    "test-coverage": "jest --coverage",
     "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "husky": "^7.0.0"
+    "eslint": "^8.10.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.4",
+    "husky": "^7.0.0",
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "@types/jest": "^27.4.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js",
+      "!src/db/index.js",
+      "!src/server/startServer.js",
+      "!src/server/index.js"
+    ],
+    "testEnvironment": "node"
   }
 }
