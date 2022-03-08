@@ -5,6 +5,7 @@
 
 ### macOS ###
 # General
+.scannerwork
 node_modules
 mydocs
 .env
