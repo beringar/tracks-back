@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const { notFoundError, generalError } = require("./middlewares/errors");
 const usersRouter = require("./routers/usersRouter");
+const tracksRouter = require("./routers/tracksRouter");
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(helmet());
 
 app.use("/users", usersRouter);
+app.use("/tracks", tracksRouter);
 
 app.use(notFoundError);
 app.use(generalError);
