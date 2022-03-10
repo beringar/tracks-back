@@ -24,10 +24,15 @@ describe("Given a generalError middleware function", () => {
         json: jest.fn(),
       };
       const error = {
+        error: true,
         code: 403,
         message: "Forbidden",
       };
-      const expectedError = { error: true, message: error.message };
+      const expectedError = {
+        error: true,
+        message: error.message,
+        code: error.code,
+      };
 
       generalError(error, null, res);
 
@@ -43,12 +48,40 @@ describe("Given a generalError middleware function", () => {
         json: jest.fn(),
       };
       const passedError = {
+        error: true,
         code: 403,
         message: "Forbidden",
       };
       const expectedCode = passedError.code;
-      const expectedError = { error: true, message: passedError.message };
+      const expectedError = {
+        error: true,
+        message: passedError.message,
+        code: passedError.code,
+      };
       generalError(passedError, null, res);
+
+      expect(res.status).toHaveBeenCalledWith(expectedCode);
+      expect(res.json).toHaveBeenCalledWith(expectedError);
+    });
+  });
+
+  describe("When it's invoked passing an unkown error", () => {
+    test("Then it should call res.status with a 500 and res.json with the message 'Internal server error!'", () => {
+      const error = new Error("test error");
+      const expectedError = {
+        error: true,
+        code: 500,
+        message: "Internal server error!",
+      };
+
+      const res = {
+        status: jest.fn(),
+        json: jest.fn(),
+      };
+
+      const expectedCode = 500;
+
+      generalError(error, null, res);
 
       expect(res.status).toHaveBeenCalledWith(expectedCode);
       expect(res.json).toHaveBeenCalledWith(expectedError);

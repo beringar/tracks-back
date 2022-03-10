@@ -21,13 +21,14 @@ const userRegister = async (req, res, next) => {
       password: encryptedPassword,
       name,
     });
-    debug(chalk.cyanBright(`User created with username: ${newUser.username}`));
+    debug(
+      chalk.cyanBright(`User registered with username: ${newUser.username}`)
+    );
     res.status(201);
     res.json({
       message: `User registered with username: ${newUser.username}`,
     });
   } catch (error) {
-    error.code = 400;
     next(error);
   }
 };
