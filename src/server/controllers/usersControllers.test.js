@@ -48,6 +48,25 @@ describe("Given a userLogin controller", () => {
     });
   });
 
+  describe("When it receives a response with an error 'throw exception'", () => {
+    test("Then it should call next with error 'throw exception'", async () => {
+      const req = {
+        body: {
+          username: "Simón",
+          password: "12345",
+        },
+      };
+      const next = jest.fn();
+      const error = new Error("throw exception");
+
+      User.findOne = jest.fn().mockRejectedValue(error);
+
+      await userLogin(req, null, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
   describe("When it receives request with valid username and password", () => {
     test("Then it should return a valid token", async () => {
       const req = {
@@ -77,6 +96,33 @@ describe("Given a userLogin controller", () => {
 });
 
 describe("Given a userRegister controller", () => {
+  describe("When it receives 'Pere', 'Pere8' and 'asasas' as name, username and password", () => {
+    test("Then it should call status method with 201 and json method with message 'User registered with username: Pere'", async () => {
+      const req = {
+        body: { username: "Pere", password: "asasas", name: "Pere8" },
+      };
+      const encryptedPassword = await encryptPassword(req.body.password);
+      const newUsername = {
+        username: req.body.username,
+        password: encryptedPassword,
+        name: req.body.name,
+      };
+      User.findOne = jest.fn().mockResolvedValue(null);
+      User.create = jest.fn().mockResolvedValue(newUsername);
+      const expectedMessage = {
+        message: `User registered with username: ${req.body.username}`,
+      };
+      const res = {
+        json: jest.fn(),
+        status: jest.fn(),
+      };
+
+      await userRegister(req, res, null);
+
+      expect(res.json).toHaveBeenCalledWith(expectedMessage);
+    });
+  });
+
   describe("When it receives an already taken username", () => {
     test("Then it should call next method wirth an error message 'Username Beren already exists!'", async () => {
       const req = {
@@ -85,6 +131,24 @@ describe("Given a userRegister controller", () => {
       await encryptPassword(req.body.password);
       User.findOne = jest.fn().mockResolvedValue(true);
       const error = new Error(`Username ${req.body.username} already exists!`);
+      const next = jest.fn();
+
+      await userRegister(req, null, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe("When it receives an error 'throw exception'", () => {
+    test("Then it should call next with error 'throw exception'", async () => {
+      const req = {
+        body: { username: "Beren", password: "asasas", name: "Pedro Pérez" },
+      };
+      const error = new Error(`Username ${req.body.username} already exists!`);
+
+      await encryptPassword(req.body.password);
+      User.findOne = jest.fn().mockRejectedValue(error);
+
       const next = jest.fn();
 
       await userRegister(req, null, next);
