@@ -5,6 +5,7 @@
 
 ### macOS ###
 # General
+uploads
 .scannerwork
 node_modules
 mydocs
