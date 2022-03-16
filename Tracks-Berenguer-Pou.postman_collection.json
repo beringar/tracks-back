@@ -1,0 +1,265 @@
+{
+	"info": {
+		"_postman_id": "7f6ee516-dd2a-455b-80e4-38632b411628",
+		"name": "Tracks-Berenguer-Pou",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user register(/users/register)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"Beren\",\n\"name\": \"Berenguer\",\n\"password\": \"asasas\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}users/register",
+					"host": [
+						"{{origin}}users"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user login (/users/login)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"Beren\",\n\"password\": \"asasas\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}users/login",
+					"host": [
+						"{{origin}}users"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user login (/users/login) con user que no existe en DB",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"ddd\",\n\"password\": \"asasas\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}users/login",
+					"host": [
+						"{{origin}}users"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user login (/users/login) con paasword erróneo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"Beren\",\n\"password\": \"zzz\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{origin}}users/login",
+					"host": [
+						"{{origin}}users"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all tracks (/tracks)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{origin}}tracks",
+					"host": [
+						"{{origin}}tracks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete track (/tracks/id) id not exiostente en DB",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{origin}}tracks/622b406961392c3b7ab56a03",
+					"host": [
+						"{{origin}}tracks"
+					],
+					"path": [
+						"622b406961392c3b7ab56a03"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete track (/tracks/id) id mal formada",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{origin}}tracks/ffff",
+					"host": [
+						"{{origin}}tracks"
+					],
+					"path": [
+						"ffff"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new track (tracks/new) con dos files!",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiT2xlZ3VlciIsImlkIjoiNjIxNGRiZGY1ZmUwZGZhYjg5YzBjMGMwIiwiaWF0IjoxNjQ1NTQ1MzQyfQ.4OxXkQHHvRXYx2N9OfbDMlZXbFNNXR8Ih4A4lib7Nko",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/Users/Berenguer/Desktop/beringar_network99.jpg"
+						},
+						{
+							"key": "name",
+							"value": "API K3 Mountain348 with attached GPX!!",
+							"type": "default"
+						},
+						{
+							"key": "refuge",
+							"value": "refugi de l'os",
+							"type": "default"
+						},
+						{
+							"key": "difficulty",
+							"value": "low",
+							"type": "default"
+						},
+						{
+							"key": "kids",
+							"value": "true",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "description of route testing k3",
+							"type": "default"
+						},
+						{
+							"key": "user",
+							"value": "6228d9e2d3b484d4871608ee",
+							"type": "default"
+						},
+						{
+							"key": "gpx",
+							"type": "file",
+							"src": "/Users/Berenguer/Desktop/icon.png"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/tracks/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"tracks",
+						"new"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "origin",
+			"value": "https://beringar-tracks-api.onrender.com/",
+			"type": "default"
+		}
+	]
+}
