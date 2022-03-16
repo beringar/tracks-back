@@ -47,10 +47,29 @@ const deleteTrack = async (req, res, next) => {
   }
 };
 
+const getFileFromLocalServer = (file) => {
+  const oldFileName = path.join("uploads", file.filename);
+  const newFileName = path.join("uploads", file.originalname);
+  fs.renameSync(oldFileName, newFileName);
+  const fileData = fs.readFileSync(newFileName);
+
+  return { name: file.originalname, data: fileData };
+};
+
+const getFirebaseDownloadUrls = (files) =>
+  Promise.all(
+    files.map(async (file) => {
+      const storageRef = ref(storage, `${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file.data);
+      const firebaseFileURL = await getDownloadURL(storageRef);
+      return firebaseFileURL;
+    })
+  );
+
 const createTrack = async (req, res, next) => {
-  const { name, refuge, difficulty, kids, seasons, description, user } =
-    req.body;
   try {
+    const { name, refuge, difficulty, kids, seasons, description, user } =
+      req.body;
     const trackNameExists = await Track.findOne({ name });
     if (trackNameExists) {
       const error = new Error(
@@ -60,43 +79,29 @@ const createTrack = async (req, res, next) => {
       next(error);
       return;
     }
-    const oldFileName = path.join("uploads", req.file.filename);
-    const newFileName = path.join("uploads", req.file.originalname);
-    fs.rename(oldFileName, newFileName, (error) => {
-      if (error) {
-        next(error);
-      }
-    });
-    fs.readFile(newFileName, async (error, file) => {
-      if (error) {
-        next(error);
-        return;
-      }
-      const storageRef = ref(storage, `${Date.now()}_${req.file.originalname}`);
-      await uploadBytes(storageRef, file);
-      const firebaseFileURL = await getDownloadURL(storageRef);
-      const newTrack = await Track.create({
-        name,
-        refuge,
-        difficulty,
-        kids,
-        seasons,
-        description,
-        user,
-        image: firebaseFileURL,
-        gpx: "testing gpx url",
-      });
 
-      res.status(201);
-      res.json({
-        message: `New track: ${newTrack.name}`,
-      });
+    const imageFile = getFileFromLocalServer(req.files.image[0]);
+    const gpxFile = getFileFromLocalServer(req.files.gpx[0]);
+    const firebaseUrls = await getFirebaseDownloadUrls([imageFile, gpxFile]);
+
+    const newTrack = await Track.create({
+      name,
+      refuge,
+      difficulty,
+      kids,
+      seasons,
+      description,
+      user,
+      image: firebaseUrls[0],
+      gpx: firebaseUrls[1],
+    });
+
+    res.status(201);
+    res.json({
+      message: `New track: ${newTrack.name}`,
     });
   } catch (error) {
-    fs.unlink(path.join("uploads", req.file.filename), () => {
-      error.code = 400;
-      next(error);
-    });
+    next(error);
   }
 };
 
