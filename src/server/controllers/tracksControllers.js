@@ -22,7 +22,7 @@ const storage = getStorage(firebaseApp);
 
 const getAllTracks = async (req, res, next) => {
   try {
-    const tracks = await Track.find();
+    const tracks = await Track.find().populate("user", "username");
     res.json({ tracks });
   } catch (error) {
     next(error);
