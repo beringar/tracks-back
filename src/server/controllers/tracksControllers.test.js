@@ -1,10 +1,13 @@
 const Track = require("../../db/models/Track");
 const { getAllTracks, deleteTrack } = require("./tracksControllers");
 
+jest.spyOn(Track, "find").mockReturnThis();
+const mockProjectPopulate = jest.spyOn(Track, "populate");
+
 describe("Given a getAllTracks controller", () => {
   describe("When it receives a valid response", () => {
     test("Then it should call res json method with an array of tracks", async () => {
-      const tracks = [
+      const expectedTracks = [
         {
           name: "Tuc de Sendrós per llac de Saboredo",
           refuge: "Saboredo",
@@ -34,14 +37,17 @@ describe("Given a getAllTracks controller", () => {
         },
       ];
 
+      mockProjectPopulate.mockImplementation(() =>
+        Promise.resolve(expectedTracks)
+      );
+
       const res = {
         json: jest.fn(),
       };
-      Track.find = jest.fn().mockResolvedValue(tracks);
 
       await getAllTracks(null, res, null);
 
-      expect(res.json).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith({ tracks: expectedTracks });
     });
   });
 
@@ -51,8 +57,8 @@ describe("Given a getAllTracks controller", () => {
         code: 500,
         message: "Internal Server Error!",
       };
+      mockProjectPopulate.mockImplementation(() => Promise.reject(error));
       const next = jest.fn();
-      Track.find = jest.fn().mockRejectedValue(error);
 
       await getAllTracks(null, null, next);
 
