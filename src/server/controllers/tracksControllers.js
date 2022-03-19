@@ -105,8 +105,21 @@ const createTrack = async (req, res, next) => {
   }
 };
 
+const getTrack = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const track = await Track.findById(id);
+    res.json(track);
+  } catch {
+    const error = new Error("There is no Track with the requested ID!");
+    error.code = 404;
+    next(error);
+  }
+};
+
 module.exports = {
   getAllTracks,
   deleteTrack,
   createTrack,
+  getTrack,
 };
