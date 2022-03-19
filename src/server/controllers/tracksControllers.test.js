@@ -1,5 +1,5 @@
 const Track = require("../../db/models/Track");
-const { getAllTracks, deleteTrack } = require("./tracksControllers");
+const { getAllTracks, deleteTrack, getTrack } = require("./tracksControllers");
 
 jest.spyOn(Track, "find").mockReturnThis();
 
@@ -152,6 +152,46 @@ describe("Given a deleteTrack controller", () => {
       Track.findByIdAndDelete = jest.fn().mockRejectedValue(error);
 
       await deleteTrack(req, null, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+});
+
+describe("Given getTrack controller", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+  describe("When it receives a request with an id", () => {
+    test("Then it should call the response json method with the track with that id", async () => {
+      const req = {
+        params: { id: "id" },
+      };
+      const res = {
+        json: jest.fn(),
+      };
+      const track = {
+        id: "id",
+      };
+
+      Track.findById = jest.fn().mockResolvedValue(track);
+
+      await getTrack(req, res, null);
+
+      expect(res.json).toHaveBeenCalledWith(track);
+    });
+  });
+  describe("When it receives a request with an id that doesn't exist", () => {
+    test("Then it should call it's next method with an error", async () => {
+      const req = {
+        params: { id: "wrongID" },
+      };
+
+      const next = jest.fn();
+      const error = new Error("There is no Track with the requested ID!");
+
+      Track.findById = jest.fn().mockResolvedValue(null);
+      await getTrack(req, null, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });
