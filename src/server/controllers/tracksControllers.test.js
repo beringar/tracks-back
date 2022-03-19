@@ -2,7 +2,8 @@ const Track = require("../../db/models/Track");
 const { getAllTracks, deleteTrack } = require("./tracksControllers");
 
 jest.spyOn(Track, "find").mockReturnThis();
-const mockProjectPopulate = jest.spyOn(Track, "populate");
+
+const mockTrackPopulate = jest.spyOn(Track, "populate");
 
 describe("Given a getAllTracks controller", () => {
   describe("When it receives a valid response", () => {
@@ -37,7 +38,7 @@ describe("Given a getAllTracks controller", () => {
         },
       ];
 
-      mockProjectPopulate.mockImplementation(() =>
+      mockTrackPopulate.mockImplementation(() =>
         Promise.resolve(expectedTracks)
       );
 
@@ -57,7 +58,7 @@ describe("Given a getAllTracks controller", () => {
         code: 500,
         message: "Internal Server Error!",
       };
-      mockProjectPopulate.mockImplementation(() => Promise.reject(error));
+      mockTrackPopulate.mockImplementation(() => Promise.reject(error));
       const next = jest.fn();
 
       await getAllTracks(null, null, next);
