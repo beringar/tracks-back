@@ -4,12 +4,14 @@ const {
   getAllTracks,
   deleteTrack,
   createTrack,
+  getTrack,
 } = require("../controllers/tracksControllers");
 
 const router = express.Router();
 const upload = multer({ dest: "uploads" });
 
 router.get("/", getAllTracks);
+router.get("/:id", getTrack);
 router.delete("/:id", deleteTrack);
 router.post(
   "/new",
