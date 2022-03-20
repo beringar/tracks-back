@@ -21,11 +21,11 @@ const TrackSchema = new Schema(
     description: { type: String, required: true },
     image: {
       type: String,
-      required: true,
+      default: "",
     },
     gpx: {
       type: String,
-      required: true,
+      default: "",
     },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },

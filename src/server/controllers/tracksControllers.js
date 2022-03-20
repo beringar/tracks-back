@@ -47,43 +47,18 @@ const deleteTrack = async (req, res, next) => {
   }
 };
 
-const getFileFromLocalServer = (file) => {
-  const oldFileName = path.join("uploads", file.filename);
-  const newFileName = path.join("uploads", file.originalname);
-  fs.renameSync(oldFileName, newFileName);
-  const fileData = fs.readFileSync(newFileName);
-
-  return { name: file.originalname, data: fileData };
-};
-
-const getFirebaseDownloadUrls = (files) =>
-  Promise.all(
-    files.map(async (file) => {
-      const storageRef = ref(storage, `${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file.data);
-      const firebaseFileURL = await getDownloadURL(storageRef);
-      return firebaseFileURL;
-    })
-  );
-
 const createTrack = async (req, res, next) => {
+  const { name, refuge, difficulty, kids, seasons, description, user } =
+    req.body;
   try {
-    const { name, refuge, difficulty, kids, seasons, description, user } =
-      req.body;
     const trackNameExists = await Track.findOne({ name });
     if (trackNameExists) {
       const error = new Error(
         `Track name ${name} already exists! Choose another name!`
       );
       error.code = 400;
-      next(error);
-      return;
+      throw error;
     }
-
-    const imageFile = getFileFromLocalServer(req.files.image[0]);
-    const gpxFile = getFileFromLocalServer(req.files.gpx[0]);
-    const firebaseUrls = await getFirebaseDownloadUrls([imageFile, gpxFile]);
-
     const newTrack = await Track.create({
       name,
       refuge,
@@ -92,15 +67,53 @@ const createTrack = async (req, res, next) => {
       seasons,
       description,
       user,
-      image: firebaseUrls[0],
-      gpx: firebaseUrls[1],
     });
 
+    const oldFileNameImage = path.join("uploads", req.files.image[0].filename);
+    const newFileNameImage = path.join(
+      "uploads",
+      `${Date.now()}_${req.files.image[0].originalname}`
+    );
+
+    fs.rename(oldFileNameImage, newFileNameImage, () => {
+      fs.readFile(newFileNameImage, async (error, file) => {
+        const storageRef = ref(
+          storage,
+          `${Date.now()}_${req.files.image[0].originalname}`
+        );
+        await uploadBytes(storageRef, file);
+        const imageFirebaseFileURL = await getDownloadURL(storageRef);
+        await Track.findByIdAndUpdate(newTrack.id, {
+          image: imageFirebaseFileURL,
+        });
+      });
+    });
+
+    const oldFileNameGpx = path.join("uploads", req.files.gpx[0].filename);
+    const newFileNameGpx = path.join(
+      "uploads",
+      `${Date.now()}_${req.files.gpx[0].originalname}`
+    );
+
+    fs.rename(oldFileNameGpx, newFileNameGpx, () => {
+      fs.readFile(newFileNameGpx, async (error, file) => {
+        const storageRef = ref(
+          storage,
+          `${Date.now()}_${req.files.gpx[0].originalname}`
+        );
+        await uploadBytes(storageRef, file);
+        const gpxFirebaseFileURL = await getDownloadURL(storageRef);
+        await Track.findByIdAndUpdate(newTrack.id, {
+          gpx: gpxFirebaseFileURL,
+        });
+      });
+    });
     res.status(201);
     res.json({
       message: `New track: ${newTrack.name}`,
     });
   } catch (error) {
+    error.code = 400;
     next(error);
   }
 };
