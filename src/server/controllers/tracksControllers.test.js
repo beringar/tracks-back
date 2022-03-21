@@ -9,6 +9,7 @@ const {
 } = require("./tracksControllers");
 
 jest.spyOn(Track, "find").mockReturnThis();
+jest.spyOn(Track, "findById").mockReturnThis();
 const mockTrackPopulate = jest.spyOn(Track, "populate");
 
 jest.mock("fs", () => ({
@@ -179,9 +180,6 @@ describe("Given a deleteTrack controller", () => {
 });
 
 describe("Given getTrack controller", () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
   describe("When it receives a request with an id", () => {
     test("Then it should call the response json method with the track with that id", async () => {
       const req = {
@@ -193,8 +191,7 @@ describe("Given getTrack controller", () => {
       const track = {
         id: "id",
       };
-
-      Track.findById = jest.fn().mockResolvedValue(track);
+      mockTrackPopulate.mockImplementation(() => Promise.resolve(track));
 
       await getTrack(req, res, null);
 
