@@ -223,7 +223,7 @@ describe("Given a createTrack controller", () => {
         refuge: "Colomina",
         difficulty: "low",
         kids: true,
-        seasons: ["autumn"],
+        seasons: '["summer", "winter"]',
         description:
           "Roads have long been built through passes, as well as railways more recently. Some high and rugged passes may have tunnels bored underneath a nearby mountainside (like the Eisenhower Tunnel bypassing Loveland Pass in the Rockies) to allow faster traffic flow throughout the year.",
         user: "6228d9e2d3b484d4871608ee",
@@ -276,7 +276,7 @@ describe("Given a createTrack controller", () => {
         refuge: "Colomina",
         difficulty: "low",
         kids: true,
-        seasons: ["autumn"],
+        seasons: '["summer", "winter"]',
         description:
           "Roads have long been built through passes, as well as railways more recently. Some high and rugged passes may have tunnels bored underneath a nearby mountainside (like the Eisenhower Tunnel bypassing Loveland Pass in the Rockies) to allow faster traffic flow throughout the year.",
         user: "6228d9e2d3b484d4871608ee",

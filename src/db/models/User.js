@@ -13,7 +13,6 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  tracks: [{ type: Schema.Types.ObjectId, ref: "Track", default: [] }],
 });
 
 const User = model("User", UserSchema, "users");
