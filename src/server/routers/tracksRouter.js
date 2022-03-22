@@ -5,6 +5,7 @@ const {
   deleteTrack,
   createTrack,
   getTrack,
+  updateTrack,
 } = require("../controllers/tracksControllers");
 
 const router = express.Router();
@@ -20,6 +21,14 @@ router.post(
     { name: "gpx", maxCount: 1 },
   ]),
   createTrack
+);
+router.patch(
+  "/update/:id",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "gpx", maxCount: 1 },
+  ]),
+  updateTrack
 );
 
 module.exports = router;

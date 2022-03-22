@@ -119,6 +119,81 @@ const createTrack = async (req, res, next) => {
   }
 };
 
+const updateTrack = async (req, res, next) => {
+  const { id } = req.params;
+  const { name, refuge, difficulty, kids, seasons, description } = req.body;
+  try {
+    const trackExists = await Track.findById(id);
+    if (!trackExists) {
+      const error = new Error(`Track ${name} is not in the database!`);
+      error.code = 400;
+      throw error;
+    }
+
+    const trackToUpdate = await Track.findByIdAndUpdate(id, {
+      name,
+      refuge,
+      difficulty,
+      kids,
+      seasons: JSON.parse(seasons),
+      description,
+    });
+
+    if (req.files.image) {
+      const oldFileNameImage = path.join(
+        "uploads",
+        req.files.image[0].filename
+      );
+      const newFileNameImage = path.join(
+        "uploads",
+        `${Date.now()}_${req.files.image[0].originalname}`
+      );
+
+      fs.rename(oldFileNameImage, newFileNameImage, () => {
+        fs.readFile(newFileNameImage, async (error, file) => {
+          const storageRef = ref(
+            storage,
+            `${Date.now()}_${req.files.image[0].originalname}`
+          );
+          await uploadBytes(storageRef, file);
+          const imageFirebaseFileURL = await getDownloadURL(storageRef);
+          await Track.findByIdAndUpdate(trackToUpdate.id, {
+            image: imageFirebaseFileURL,
+          });
+        });
+      });
+    }
+
+    if (req.files.gpx) {
+      const oldFileNameGpx = path.join("uploads", req.files.gpx[0].filename);
+      const newFileNameGpx = path.join(
+        "uploads",
+        `${Date.now()}_${req.files.gpx[0].originalname}`
+      );
+
+      fs.rename(oldFileNameGpx, newFileNameGpx, () => {
+        fs.readFile(newFileNameGpx, async (error, file) => {
+          const storageRef = ref(
+            storage,
+            `${Date.now()}_${req.files.gpx[0].originalname}`
+          );
+          await uploadBytes(storageRef, file);
+          const gpxFirebaseFileURL = await getDownloadURL(storageRef);
+          await Track.findByIdAndUpdate(trackToUpdate.id, {
+            gpx: gpxFirebaseFileURL,
+          });
+        });
+      });
+    }
+    const updatedTrack = await Track.findById(id).populate("user", "username");
+    res.status(200);
+    res.json(updatedTrack);
+  } catch (error) {
+    error.code = 400;
+    next(error);
+  }
+};
+
 const getTrack = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -136,4 +211,5 @@ module.exports = {
   deleteTrack,
   createTrack,
   getTrack,
+  updateTrack,
 };
