@@ -59,12 +59,13 @@ const createTrack = async (req, res, next) => {
       error.code = 400;
       throw error;
     }
+
     const newTrack = await Track.create({
       name,
       refuge,
       difficulty,
       kids,
-      seasons,
+      seasons: JSON.parse(seasons),
       description,
       user,
     });
