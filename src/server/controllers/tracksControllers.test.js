@@ -6,10 +6,12 @@ const {
   deleteTrack,
   getTrack,
   createTrack,
+  updateTrack,
 } = require("./tracksControllers");
 
 jest.spyOn(Track, "find").mockReturnThis();
 jest.spyOn(Track, "findById").mockReturnThis();
+jest.spyOn(Track, "findByIdAndUpdate").mockReturnThis();
 const mockTrackPopulate = jest.spyOn(Track, "populate");
 
 jest.mock("fs", () => ({
@@ -385,6 +387,64 @@ describe("Given a createTrack controller", () => {
       await createTrack(req, res, next);
 
       expect(next).toHaveBeenCalled();
+    });
+  });
+});
+
+describe("Given a updateTrack controller", () => {
+  describe("When it receives a request with the data of a track", () => {
+    test("Then it should call its res json method with the track created", async () => {
+      const idTest = "123456";
+      const newtrack = {
+        name: "testing timeago functionality right now",
+        refuge: "Colomina",
+        difficulty: "low",
+        kids: true,
+        seasons: '["summer", "winter"]',
+        description:
+          "Roads have long been built through passes, as well as railways more recently. Some high and rugged passes may have tunnels bored underneath a nearby mountainside (like the Eisenhower Tunnel bypassing Loveland Pass in the Rockies) to allow faster traffic flow throughout the year.",
+      };
+
+      const newFile = {
+        originalname: "track.png",
+        filename: "muntanyis.jpg",
+        path: "uploads",
+      };
+
+      const res = {
+        status: jest.fn(),
+        json: jest.fn(),
+      };
+
+      const next = jest.fn();
+
+      const req = {
+        params: { id: idTest },
+        body: newtrack,
+        files: {
+          image: [newFile],
+          gpx: [newFile],
+        },
+      };
+
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldname, newname, callback) => {
+          callback();
+        });
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(null, newFile);
+      });
+
+      const mockTrackFindById = jest.spyOn(Track, "findById");
+
+      mockTrackFindById.mockImplementationOnce(() => Promise.resolve(newtrack));
+      mockTrackFindById.mockReturnThis();
+
+      mockTrackPopulate.mockImplementation(() => Promise.resolve(newtrack));
+      await updateTrack(req, res, next);
+
+      expect(res.json).toHaveBeenCalled();
     });
   });
 });
