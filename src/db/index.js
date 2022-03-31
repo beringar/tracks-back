@@ -2,6 +2,8 @@ const debug = require("debug")("tracks: database");
 const chalk = require("chalk");
 const mongoose = require("mongoose");
 
+// mongoDB connect + config
+
 const connectDB = (connectionString) =>
   new Promise((resolve, reject) => {
     mongoose.set("debug", true);
