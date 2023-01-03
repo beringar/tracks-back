@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 
 const connectDB = (connectionString) =>
   new Promise((resolve, reject) => {
-    mongoose.set("debug", true);
+    mongoose.set("debug", false);
     mongoose.set("toJSON", {
       virtuals: true,
       transform: (doc, ret) => {
