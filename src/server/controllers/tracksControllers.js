@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const sanitizeFilename = require("sanitize-filename");
 const { initializeApp } = require("firebase/app");
 const {
   getStorage,
@@ -100,7 +101,7 @@ const createTrack = async (req, res, next) => {
       fs.readFile(newFileNameGpx, async (error, file) => {
         const storageRef = ref(
           storage,
-          `${Date.now()}_${req.files.gpx[0].originalname}`
+          `${sanitizeFilename(name)}_${Date.now()}.gpx`
         );
         await uploadBytes(storageRef, file);
         const gpxFirebaseFileURL = await getDownloadURL(storageRef);
@@ -175,7 +176,7 @@ const updateTrack = async (req, res, next) => {
         fs.readFile(newFileNameGpx, async (error, file) => {
           const storageRef = ref(
             storage,
-            `${Date.now()}_${req.files.gpx[0].originalname}`
+            `${sanitizeFilename(name)}_${Date.now()}.gpx`
           );
           await uploadBytes(storageRef, file);
           const gpxFirebaseFileURL = await getDownloadURL(storageRef);
